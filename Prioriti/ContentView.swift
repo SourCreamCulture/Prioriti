@@ -8,14 +8,51 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var tasks: [Task] = []
+    @State private var newTaskName: String = ""
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            VStack(spacing: 16) {
+                // Task input field
+                HStack {
+                    Image(systemName: "checkmark.square")
+                        .foregroundColor(.gray)
+                    TextField("Task name", text: $newTaskName)
+                    Button(action: addTask) {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(.blue)
+                    }
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color(.systemBackground))
+                        .shadow(radius: 2)
+                )
+                .padding(.horizontal)
+                
+                // Task list
+                List {
+                    ForEach(tasks) { task in
+                        Text(task.name)
+                    }
+                    .onDelete(perform: deleteTasks)
+                }
+                .listStyle(PlainListStyle())
+            }
+            .navigationTitle("Tasks")
         }
-        .padding()
+    }
+    
+    private func addTask() {
+        guard !newTaskName.isEmpty else { return }
+        tasks.append(Task(name: newTaskName))
+        newTaskName = ""
+    }
+    
+    private func deleteTasks(at offsets: IndexSet) {
+        tasks.remove(atOffsets: offsets)
     }
 }
 
